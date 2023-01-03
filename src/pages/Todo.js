@@ -22,11 +22,21 @@ const Todo = () => {
 
     const deleteClick = useCallback(
         (id) => {
-            const nowTodo = todoData.filter((item) => item.id !== id);
+            if (window.confirm("삭제?")) {
+                let body = {
+                    id: id,
+                };
 
-            setTodoData(nowTodo);
-
-            localStorage.setItem("todoData", JSON.stringify(nowTodo));
+                axios
+                    .post("/api/post/delete", body)
+                    .then((res) => {
+                        const nowTodo = todoData.filter(
+                            (item) => item.id !== id
+                        );
+                        setTodoData(nowTodo);
+                    })
+                    .catch((err) => console.log(err));
+            }
         },
         [todoData]
     );
@@ -63,8 +73,10 @@ const Todo = () => {
     };
 
     const deleteAllClick = () => {
-        setTodoData([]);
-        localStorage.clear();
+        axios
+            .post("/api/post/alldelete")
+            .then((res) => setTodoData([]))
+            .catch((err) => console.log(err));
     };
 
     return (
